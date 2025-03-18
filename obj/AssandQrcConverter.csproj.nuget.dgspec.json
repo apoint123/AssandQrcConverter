@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\q098l\\source\\repos\\AssandQrcConverter\\AssandQrcConverter.csproj": {}
+    "C:\\Users\\q098l\\source\\repos\\ASSandQRCConverter\\AssandQrcConverter.csproj": {}
   },
   "projects": {
-    "C:\\Users\\q098l\\source\\repos\\AssandQrcConverter\\AssandQrcConverter.csproj": {
+    "C:\\Users\\q098l\\source\\repos\\ASSandQRCConverter\\AssandQrcConverter.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\q098l\\source\\repos\\AssandQrcConverter\\AssandQrcConverter.csproj",
+        "projectUniqueName": "C:\\Users\\q098l\\source\\repos\\ASSandQRCConverter\\AssandQrcConverter.csproj",
         "projectName": "AssandQrcConverter",
-        "projectPath": "C:\\Users\\q098l\\source\\repos\\AssandQrcConverter\\AssandQrcConverter.csproj",
+        "projectPath": "C:\\Users\\q098l\\source\\repos\\ASSandQRCConverter\\AssandQrcConverter.csproj",
         "packagesPath": "C:\\Users\\q098l\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\q098l\\source\\repos\\AssandQrcConverter\\obj\\",
         "projectStyle": "PackageReference",
