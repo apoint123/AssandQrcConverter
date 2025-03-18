@@ -1,0 +1,2 @@
+# AssandQrcConverter
+将带有k值的ASS字幕文件转换为QRC歌词文件
