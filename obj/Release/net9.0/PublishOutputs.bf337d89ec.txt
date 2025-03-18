@@ -1,0 +1,5 @@
+C:\Users\q098l\Desktop\assandqrcconverter\AssandQrcConverter.exe
+C:\Users\q098l\Desktop\assandqrcconverter\AssandQrcConverter.dll
+C:\Users\q098l\Desktop\assandqrcconverter\AssandQrcConverter.deps.json
+C:\Users\q098l\Desktop\assandqrcconverter\AssandQrcConverter.runtimeconfig.json
+C:\Users\q098l\Desktop\assandqrcconverter\AssandQrcConverter.pdb
