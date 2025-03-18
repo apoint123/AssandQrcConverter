@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\q098l\\source\\repos\\AssandQrcConverter\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{CBCB57F7-D522-496B-BFAD-F2E9BECC5C50}|AssandQrcConverter.csproj|c:\\users\\q098l\\source\\repos\\assandqrcconverter\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{CBCB57F7-D522-496B-BFAD-F2E9BECC5C50}|AssandQrcConverter.csproj|solutionrelative:readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{CBCB57F7-D522-496B-BFAD-F2E9BECC5C50}|AssandQrcConverter.csproj|c:\\users\\q098l\\source\\repos\\assandqrcconverter\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBCB57F7-D522-496B-BFAD-F2E9BECC5C50}|AssandQrcConverter.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -39,14 +43,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\q098l\\source\\repos\\AssandQrcConverter\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "C:\\Users\\q098l\\source\\repos\\AssandQrcConverter\\README.md",
+              "RelativeToolTip": "README.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-03-18T14:43:33.943Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\q098l\\source\\repos\\AssandQrcConverter\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\q098l\\source\\repos\\AssandQrcConverter\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-18T14:12:47.301Z",
+              "WhenOpened": "2025-03-18T14:39:39.7Z",
               "EditorCaption": ""
             }
           ]
