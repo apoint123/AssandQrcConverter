@@ -28,9 +28,3 @@ jobs:
         name: dotnet-build-artifacts
         path: |
           **/bin/debug/net9.0/**
-
-          - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output  # Artifact 名称
-          path: output        
