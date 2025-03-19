@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AssandQrcConverter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1d3a5029ad7476134fe3e70a0596577aa66ba6a6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ebb25650ff6b1a65d8158b7cc00a3395d06ce8d")]
 [assembly: System.Reflection.AssemblyProductAttribute("AssandQrcConverter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AssandQrcConverter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

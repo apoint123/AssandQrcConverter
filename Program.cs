@@ -1,59 +1,60 @@
 ﻿using System.Text.RegularExpressions;
 
-
-Console.WriteLine("请选择操作：1. ASS -> QRC， 2. QRC -> ASS");
-string? choice = Console.ReadLine();
-if (string.IsNullOrWhiteSpace(choice))
-{
-    Console.WriteLine("无效选择");
-    return;
-}
-string trimmedChoice = choice.Trim();
-if (trimmedChoice == "1")
-{
-    Console.Write("输入 .ass 文件路径: ");
-    string? assPath = Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(assPath))
+while (true) { 
+    Console.WriteLine("请选择操作：1. ASS -> QRC， 2. QRC -> ASS");
+    string? choice = Console.ReadLine();
+    if (string.IsNullOrWhiteSpace(choice))
     {
-        Console.WriteLine("输入的 ASS 文件路径不能为空");
-        return;
+        Console.WriteLine("无效选择");
+        continue;
     }
-
-    Console.Write("输出 .qrc 文件路径: ");
-    string? qrcPath = Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(qrcPath))
+    string trimmedChoice = choice.Trim();
+    if (trimmedChoice == "1")
     {
-        Console.WriteLine("输出的 QRC 文件路径不能为空");
-        return;
-    }
+        Console.Write("输入 .ass 文件路径: ");
+        string? assPath = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(assPath))
+        {
+            Console.WriteLine("输入的 ASS 文件路径不能为空");
+            continue;
+        }
 
-    ConvertAssToQrc(assPath, qrcPath);
-}
-else if (trimmedChoice == "2")
-{
-    Console.Write("输入 .qrc 文件路径: ");
-    string? qrcPath = Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(qrcPath))
+        Console.Write("输出 .qrc 文件路径: ");
+        string? qrcPath = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(qrcPath))
+        {
+            Console.WriteLine("输出的 QRC 文件路径不能为空");
+            continue;
+        }
+
+        ConvertAssToQrc(assPath, qrcPath);
+    }
+    else if (trimmedChoice == "2")
     {
-        Console.WriteLine("输入的 QRC 文件路径不能为空");
-        return;
-    }
+        Console.Write("输入 .qrc 文件路径: ");
+        string? qrcPath = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(qrcPath))
+        {
+            Console.WriteLine("输入的 QRC 文件路径不能为空");
+            continue;
+        }
 
-    Console.Write("输出 .ass 文件路径: ");
-    string? assPath = Console.ReadLine();
-    if (string.IsNullOrWhiteSpace(assPath))
+        Console.Write("输出 .ass 文件路径: ");
+        string? assPath = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(assPath))
+        {
+            Console.WriteLine("输出的 ASS 文件路径不能为空");
+            continue;
+        }
+
+        ConvertQrcToAss(qrcPath, assPath); 
+    }
+    else
     {
-        Console.WriteLine("输出的 ASS 文件路径不能为空");
-        return;
+        Console.WriteLine("无效选择");
+        continue;
     }
-
-    ConvertQrcToAss(qrcPath, assPath); 
 }
-else
-{
-    Console.WriteLine("无效选择");
-}
-
 // ASS --> QRC
 void ConvertAssToQrc(string assPath, string qrcPath)
 {
@@ -135,7 +136,9 @@ void ConvertQrcToAss(string qrcPath, string assPath)
         string assText = string.Join("", assSegments);
         string startFormatted = MillisecondsToTime(start);
         string endFormatted = MillisecondsToTime(end);
-        output.Add($"Dialogue: 0,{startFormatted},{endFormatted},Default,,0,0,0,,{assText}");
+        string dialogueLine = $"Dialogue: 0,{startFormatted},{endFormatted},Default,,0,0,0,,{assText}";
+        dialogueLine = Regex.Replace(dialogueLine, @"\{\\k0\}", "");
+        output.Add(dialogueLine);
     }
 
     File.WriteAllLines(assPath, output);
