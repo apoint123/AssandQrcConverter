@@ -2,5 +2,8 @@
 # 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
 ################################################################################
 
-/.vs/AssandQrcConverter/FileContentIndex/0b266bdc-f50a-4e40-99b6-4926799d57a7.vsidx
+.vs/
+bin/
+obj/
+properties/
 /AssandQrcConverter.csproj.user
