@@ -1,7 +1,9 @@
 # AssandQrcConverter
-相互转换带有 K 值 `{\kxx}` 的 ASS 字幕文件（也被称为**卡拉 OK**）和 QRC 歌词文件  
+相互转换带有 K 值 `{\kxx}` 的 ASS 字幕文件（也被称为**卡拉 OK**）和 QRC 歌词文件。  
 
 在转换完成后，请**检查**输出文件是否正确。
+
+建议搭配 [Aegisub](https://github.com/TypesettingTools/Aegisub) 和 [163MusicLyrics](https://github.com/jitwxs/163MusicLyrics) 取得最佳效果。
 ## 示例
 原始文件
 
