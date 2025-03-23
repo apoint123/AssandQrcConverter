@@ -38,20 +38,26 @@ while (true)
     }
 }
 
+// 获取文件路径
+static string? ReadFilePath(string promptTemplate, string extension)
+{
+    Console.Write(string.Format(promptTemplate, extension));
+    string? path = Console.ReadLine()?.Trim();
+    return string.IsNullOrEmpty(path) ? null : path;
+}
+
 // 转换方法
 static void ProcessConversion(Action<string, string> conversionAction, string inputExtension, string outputExtension)
 {
-    Console.Write(string.Format(InputFilePathPrompt, inputExtension));
-    string? inputPath = Console.ReadLine()?.Trim();
-    if (string.IsNullOrEmpty(inputPath))
+    string? inputPath = ReadFilePath(InputFilePathPrompt, inputExtension);
+    if (inputPath is null)
     {
         Console.WriteLine(string.Format(EmptyFilePathErrorMessage, inputExtension));
         return;
     }
 
-    Console.Write(string.Format(OutputFilePathPrompt, outputExtension));
-    string? outputPath = Console.ReadLine()?.Trim();
-    if (string.IsNullOrEmpty(outputPath))
+    string? outputPath = ReadFilePath(OutputFilePathPrompt, outputExtension);
+    if (outputPath is null)
     {
         Console.WriteLine(string.Format(EmptyFilePathErrorMessage, outputExtension));
         return;
@@ -108,6 +114,7 @@ static void ConvertAssToQrc(string assPath, string qrcPath)
 
             writer.WriteLine(qrcLineBuilder.ToString());
         }
+
         Console.WriteLine(AssToQrcConversionComplete);
     }
     catch (Exception ex)
@@ -116,7 +123,7 @@ static void ConvertAssToQrc(string assPath, string qrcPath)
     }
 }
 
-// QRC -> ASS
+// QRC -> ASS 
 static void ConvertQrcToAss(string qrcPath, string assPath)
 {
     try
@@ -160,12 +167,11 @@ static void ConvertQrcToAss(string qrcPath, string assPath)
             }
             assTextBuilder.Append(segmentsPart[lastIndex..]);
 
-            string assText = assTextBuilder.ToString();
             string startTimeFormatted = MillisecondsToTime(startMs);
             string endTimeFormatted = MillisecondsToTime(endMs);
-            string dialogueLine = $"Dialogue: 0,{startTimeFormatted},{endTimeFormatted},Default,,0,0,0,,{assText}";
-            writer.WriteLine(dialogueLine);
+            writer.WriteLine($"Dialogue: 0,{startTimeFormatted},{endTimeFormatted},Default,,0,0,0,,{assTextBuilder}");
         }
+
         Console.WriteLine(QrcToAssConversionComplete);
     }
     catch (Exception ex)
@@ -194,7 +200,7 @@ static string MillisecondsToTime(int ms)
     ms %= 60000;
     int s = ms / 1000;
     ms %= 1000;
-    return $"{h:D1}:{m:D2}:{s:D2}.{ms / 10:D2}";
+    return $"{h}:{m:D2}:{s:D2}.{ms / 10:D2}";
 }
 
 // 时间戳和文字的正则表达式
