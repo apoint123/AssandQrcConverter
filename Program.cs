@@ -66,7 +66,16 @@ static void ProcessConversion(Action<string, string> conversionAction, string in
     conversionAction(inputPath, outputPath);
 }
 
-// ASS -> QRC 
+static void DisplayProgressBar(int current, int total)
+{
+    int percentage = (int)(((double)current / total) * 100);
+    int barLength = 20;
+    int filledLength = (int)(barLength * percentage / 100.0);
+    string bar = new string('=', filledLength) + new string(' ', barLength - filledLength);
+    Console.Write($"\r[{bar}] {percentage}% ({current}/{total})");
+}
+
+// ASS -> QRC
 static void ConvertAssToQrc(string assPath, string qrcPath)
 {
     try
@@ -74,14 +83,12 @@ static void ConvertAssToQrc(string assPath, string qrcPath)
         Regex dialogueTimestampRegex = TimeRegex.DialogueTimestampRegex();
         Regex kTagRegex = TimeRegex.KTagRegex();
 
-        using var reader = new StreamReader(assPath);
+        var dialogueLines = File.ReadLines(assPath).Where(line => line.StartsWith("Dialogue:")).ToList();
+        int totalDialogueLines = dialogueLines.Count;
+        int processedLines = 0;
         using var writer = new StreamWriter(qrcPath);
-        string? line;
-        while ((line = reader.ReadLine()) != null)
+        foreach (var line in dialogueLines)
         {
-            if (!line.StartsWith("Dialogue:"))
-                continue;
-
             // 提取时间戳
             Match timeMatch = dialogueTimestampRegex.Match(line);
             if (!timeMatch.Success)
@@ -93,12 +100,12 @@ static void ConvertAssToQrc(string assPath, string qrcPath)
 
             // 提取文字及 K 标签
             MatchCollection kTagMatches = kTagRegex.Matches(line);
-            var kValues = new List<int>();
+            var kTagValues = new List<int>();
             var words = new List<string>();
 
             foreach (Match match in kTagMatches)
             {
-                kValues.Add(int.Parse(match.Groups[1].Value) * 10);
+                kTagValues.Add(int.Parse(match.Groups[1].Value) * 10);
                 words.Add(match.Groups[2].Value);
             }
 
@@ -108,14 +115,16 @@ static void ConvertAssToQrc(string assPath, string qrcPath)
             int currentTimestamp = startMs;
             for (int i = 0; i < words.Count; i++)
             {
-                qrcLineBuilder.Append($"{words[i]}({currentTimestamp},{kValues[i]})");
-                currentTimestamp += kValues[i];
+                qrcLineBuilder.Append($"{words[i]}({currentTimestamp},{kTagValues[i]})");
+                currentTimestamp += kTagValues[i];
             }
 
             writer.WriteLine(qrcLineBuilder.ToString());
+            processedLines++;
+            DisplayProgressBar(processedLines, totalDialogueLines);
         }
 
-        Console.WriteLine(AssToQrcConversionComplete);
+        Console.WriteLine($"\n{AssToQrcConversionComplete}");
     }
     catch (Exception ex)
     {
@@ -123,7 +132,7 @@ static void ConvertAssToQrc(string assPath, string qrcPath)
     }
 }
 
-// QRC -> ASS 
+// QRC -> ASS
 static void ConvertQrcToAss(string qrcPath, string assPath)
 {
     try
@@ -131,16 +140,18 @@ static void ConvertQrcToAss(string qrcPath, string assPath)
         Regex qrcTimestampRegex = TimeRegex.QrcTimestampRegex();
         Regex wordTimeTagRegex = TimeRegex.WordTimeTagRegex();
 
-        using var reader = new StreamReader(qrcPath);
+        var allLines = File.ReadLines(qrcPath).ToList();
+        int totalLines = allLines.Count;
+        int processedLines = 0;
         using var writer = new StreamWriter(assPath);
         // 写入 ASS 头部信息
         writer.WriteLine("[Events]");
         writer.WriteLine("Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text");
 
-        string? line;
-        while ((line = reader.ReadLine()) != null)
+        for (int i = 0; i < totalLines; i++)
         {
-            // 提取 [start,duration] 
+            string? line = allLines[i];
+            // 提取 [start,duration]
             Match headerMatch = qrcTimestampRegex.Match(line);
             if (!headerMatch.Success)
                 continue;
@@ -170,9 +181,11 @@ static void ConvertQrcToAss(string qrcPath, string assPath)
             string startTimeFormatted = MillisecondsToTime(startMs);
             string endTimeFormatted = MillisecondsToTime(endMs);
             writer.WriteLine($"Dialogue: 0,{startTimeFormatted},{endTimeFormatted},Default,,0,0,0,,{assTextBuilder}");
+            processedLines++;
+            DisplayProgressBar(processedLines, totalLines);
         }
 
-        Console.WriteLine(QrcToAssConversionComplete);
+        Console.WriteLine($"\n{QrcToAssConversionComplete}");
     }
     catch (Exception ex)
     {
