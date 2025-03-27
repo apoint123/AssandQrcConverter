@@ -39,36 +39,32 @@ while (true)
 }
 
 // 获取文件路径
-static string? ReadFilePath(string promptTemplate, string extension)
+static string ReadFilePath(string promptTemplate, string extension)
 {
-    Console.Write(string.Format(promptTemplate, extension));
-    string? path = Console.ReadLine()?.Trim();
-    return string.IsNullOrEmpty(path) ? null : path;
+    while (true)
+    {
+        Console.Write(string.Format(promptTemplate, extension));
+        string? path = Console.ReadLine()?.Trim();
+        if (!string.IsNullOrEmpty(path))
+        {
+            return path;
+        }
+        Console.WriteLine(string.Format(EmptyFilePathErrorMessage, extension));
+    }
 }
 
 // 转换方法
 static void ProcessConversion(Action<string, string> conversionAction, string inputExtension, string outputExtension)
 {
-    string? inputPath = ReadFilePath(InputFilePathPrompt, inputExtension);
-    if (inputPath is null)
-    {
-        Console.WriteLine(string.Format(EmptyFilePathErrorMessage, inputExtension));
-        return;
-    }
-
-    string? outputPath = ReadFilePath(OutputFilePathPrompt, outputExtension);
-    if (outputPath is null)
-    {
-        Console.WriteLine(string.Format(EmptyFilePathErrorMessage, outputExtension));
-        return;
-    }
-
+    string inputPath = ReadFilePath(InputFilePathPrompt, inputExtension);
+    string outputPath = ReadFilePath(OutputFilePathPrompt, outputExtension);
     conversionAction(inputPath, outputPath);
 }
 
 static void DisplayProgressBar(int current, int total)
 {
-    int percentage = (int)(((double)current / total) * 100);
+    if (current >= total) current = total;
+    int percentage = (int)((double)current / total * 100);
     int barLength = 20;
     int filledLength = (int)(barLength * percentage / 100.0);
     string bar = new string('=', filledLength) + new string(' ', barLength - filledLength);
@@ -91,7 +87,7 @@ static void ConvertAssToQrc(string assPath, string qrcPath)
         {
             // 提取时间戳
             Match timeMatch = dialogueTimestampRegex.Match(line);
-            if (!timeMatch.Success)
+            if (!timeMatch.Success) 
                 continue;
 
             int startMs = TimeToMilliseconds(timeMatch.Groups[1].Value);
@@ -99,7 +95,7 @@ static void ConvertAssToQrc(string assPath, string qrcPath)
             int durationMs = endMs - startMs;
 
             // 提取文字及 K 标签
-            MatchCollection kTagMatches = kTagRegex.Matches(line);
+            var kTagMatches = kTagRegex.Matches(line);
             var kTagValues = new List<int>();
             var words = new List<string>();
 
@@ -148,38 +144,42 @@ static void ConvertQrcToAss(string qrcPath, string assPath)
         writer.WriteLine("[Events]");
         writer.WriteLine("Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text");
 
-        for (int i = 0; i < totalLines; i++)
+        foreach (var line in allLines)
         {
-            string? line = allLines[i];
-            // 提取 [start,duration]
             Match headerMatch = qrcTimestampRegex.Match(line);
-            if (!headerMatch.Success)
-                continue;
+            if (!headerMatch.Success) continue;
 
-            int startMs = int.Parse(headerMatch.Groups[1].Value);
+            int headerStart = int.Parse(headerMatch.Groups[1].Value);
             int durationMs = int.Parse(headerMatch.Groups[2].Value);
-            int endMs = startMs + durationMs;
-
-            // 剔除头部，获取剩余内容
+            int headerEnd = headerStart + durationMs;
             int headerEndIndex = line.IndexOf(']') + 1;
             string segmentsPart = line[headerEndIndex..];
-
-            // 根据时间标签生成 ASS 格式文本
-            MatchCollection matches = wordTimeTagRegex.Matches(segmentsPart);
-            int lastIndex = 0;
+            var matches = wordTimeTagRegex.Matches(segmentsPart);
             var assTextBuilder = new StringBuilder();
-
-            foreach (Match match in matches)
+            // 处理 QRC 时间轴不连续的情况
+            for (int i = 0; i < matches.Count; i++)
             {
-                string wordSegment = segmentsPart[lastIndex..match.Index];
-                int kValue = int.Parse(match.Groups[2].Value) / 10;
-                assTextBuilder.Append($@"{{\k{kValue}}}{wordSegment}");
-                lastIndex = match.Index + match.Length;
-            }
-            assTextBuilder.Append(segmentsPart[lastIndex..]);
+                var match = matches[i];
+                int segStart = int.Parse(match.Groups["start"].Value);
+                int segDur = int.Parse(match.Groups["dur"].Value);
+                int wordK = segDur / 10;
+                string fullText = match.Groups["text"].Value;
+                string wordText = fullText.TrimEnd();
+                string trailingSpaces = fullText[wordText.Length..];
+                assTextBuilder.Append($@"{{\k{wordK}}}{wordText}");
 
-            string startTimeFormatted = MillisecondsToTime(startMs);
-            string endTimeFormatted = MillisecondsToTime(endMs);
+                int segEnd = segStart + segDur;
+                int nextStart = i < matches.Count - 1 ? int.Parse(matches[i + 1].Groups["start"].Value) : headerEnd;
+                int gap = nextStart - segEnd;
+                if (gap > 0)
+                {
+                    int gapK = gap / 10;
+                    assTextBuilder.Append($@"{{\k{gapK}}} ");
+                }
+            }
+
+            string startTimeFormatted = MillisecondsToTime(headerStart);
+            string endTimeFormatted = MillisecondsToTime(headerEnd);
             writer.WriteLine($"Dialogue: 0,{startTimeFormatted},{endTimeFormatted},Default,,0,0,0,,{assTextBuilder}");
             processedLines++;
             DisplayProgressBar(processedLines, totalLines);
@@ -196,38 +196,25 @@ static void ConvertQrcToAss(string qrcPath, string assPath)
 // 将时间戳转换为毫秒（ASS -> QRC）
 static int TimeToMilliseconds(string time)
 {
-    var parts = time.Split([':', '.']);
-    int h = int.Parse(parts[0]);
-    int m = int.Parse(parts[1]);
-    int s = int.Parse(parts[2]);
-    int ms = int.Parse(parts[3]);
-    return (h * 3600 + m * 60 + s) * 1000 + ms * 10;
+    var parts = time.Split([':', '.']).Select(int.Parse).ToArray();
+    return (parts[0] * 3600 + parts[1] * 60 + parts[2]) * 1000 + parts[3] * 10;
 }
 
 // 将毫秒转换为时间戳（QRC -> ASS）
-static string MillisecondsToTime(int ms)
-{
-    int h = ms / 3600000;
-    ms %= 3600000;
-    int m = ms / 60000;
-    ms %= 60000;
-    int s = ms / 1000;
-    ms %= 1000;
-    return $"{h}:{m:D2}:{s:D2}.{ms / 10:D2}";
-}
+static string MillisecondsToTime(int ms) => $"{ms / 3600000:D2}:{ms % 3600000 / 60000:D2}:{(ms % 60000) / 1000:D2}.{(ms % 1000) / 10:D2}";
 
-// 时间戳和文字的正则表达式
 partial class TimeRegex
 {
-    [GeneratedRegex(@"Dialogue:\s*\d+,(\d+:\d+:\d+\.\d+),(\d+:\d+:\d+\.\d+),")]
+    // 匹配 ASS 行时间戳
+    [GeneratedRegex(@"Dialogue:\s*\d+,(\d+:\d+:\d+\.\d+),(\d+:\d+:\d+\.\d+),")] 
     public static partial Regex DialogueTimestampRegex();
-
-    [GeneratedRegex(@"\{\\k(\d+)\}([^\\{]*)")]
+    // 匹配 ASS k tags
+    [GeneratedRegex(@"\{\\k(\d+)\}([^\\{]*)")] 
     public static partial Regex KTagRegex();
-
-    [GeneratedRegex(@"\[(\d+),(\d+)\]")]
+    // 匹配 QRC 时间戳
+    [GeneratedRegex(@"\[(\d+),(\d+)\]")] 
     public static partial Regex QrcTimestampRegex();
-
-    [GeneratedRegex(@"\((\d+),(\d+)\)")]
+    // 匹配 QRC 词和时间
+    [GeneratedRegex(@"(?<text>[^(]+)\((?<start>\d+),(?<dur>\d+)\)")] 
     public static partial Regex WordTimeTagRegex();
 }
