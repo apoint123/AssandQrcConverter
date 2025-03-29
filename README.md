@@ -27,5 +27,5 @@ Dialogue: 0,0:00:39.75,0:00:42.91,Default,,0,0,0,,{\k87}随{\k21}记{\k24}忆{\k
 Dialogue: 0,0:00:42.91,0:00:45.93,Default,,0,0,0,,{\k31}Re {\k44}So {\k44}So {\k44}Si {\k45}Do {\k44}Si {\k25}La   
 Dialogue: 0,0:00:45.93,0:00:49.87,Default,,0,0,0,,{\k18}So {\k24}La {\k38}Si {\k42}Si {\k43}Si {\k53}Si {\k18}La {\k20}Si {\k42}La {\k50}So   
 
-## 已知问题
-- ASS 字幕格式的时间戳只能精确到 10 毫秒，但 QRC 的时间戳可以精确到 1 毫秒。将 QRC 转换为 ASS 时，QRC 的时间戳会被四舍五入。  
+## 注意事项
+- ASS 字幕格式的时间戳只能精确到 10 毫秒，但 QRC 的时间戳可以精确到 1 毫秒。将 QRC 转换为 ASS 时，QRC 的时间戳会被四舍五入，这会导致转换后的 ASS 文件时间轴与原始 QRC 文件存在偏差。建议使用 [Aegisub](https://github.com/TypesettingTools/Aegisub) 校对时间轴。

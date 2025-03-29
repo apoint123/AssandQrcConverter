@@ -178,13 +178,13 @@ static void ConvertQrcToAss(string qrcPath, string assPath)
                 int segStart = int.Parse(m.Groups["start"].Value);
                 int segDur = int.Parse(m.Groups["dur"].Value);
                 int wordK = segDur / 10;
-                string text = m.Groups["text"].Value.TrimEnd();
+                string text = m.Groups["text"].Value;
                 assTextBuilder.Append($@"{{\k{wordK}}}{text}");
 
                 int segEnd = segStart + segDur;
                 int nextStart = i < matches.Count - 1 ? int.Parse(matches[i + 1].Groups["start"].Value) : headerEnd;
                 if (nextStart > segEnd)
-                    assTextBuilder.Append($@"{{\k{(nextStart - segEnd) / 10}}} ");
+                    assTextBuilder.Append($@"{{\k{(nextStart - segEnd) / 10}}}");
             }
 
             writer.WriteLine($"Dialogue: 0,{MillisecondsToTime(headerStart)},{MillisecondsToTime(headerEnd)},Default,,0,0,0,,{assTextBuilder}");
