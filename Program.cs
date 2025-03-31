@@ -200,7 +200,16 @@ static void ConvertQrcToAss(string qrcPath, string assPath)
 }
 
 // 将时间戳转换为毫秒（ASS -> QRC）
-static int TimeToMilliseconds(string time) => (((time[0] - '0') * 10 + (time[1] - '0')) * 3600 + ((time[3] - '0') * 10 + (time[4] - '0')) * 60 + (time[6] - '0') * 10 + (time[7] - '0')) * 1000 + ((time[9] - '0') * 10 + (time[10] - '0')) * 10;
+static int TimeToMilliseconds(string time)
+{
+    var timeParts = time.Split(':', '.');
+    int hours = int.Parse(timeParts[0]);
+    int minutes = int.Parse(timeParts[1]);
+    int seconds = int.Parse(timeParts[2]);
+    int centiseconds = int.Parse(timeParts[3]);
+
+    return (hours * 3600 + minutes * 60 + seconds) * 1000 + centiseconds * 10;
+}
 
 // 将毫秒转换为时间戳（QRC -> ASS）
 static string MillisecondsToTime(int ms) => $"{ms / 3600000:D2}:{ms % 3600000 / 60000:D2}:{(ms % 60000) / 1000:D2}.{(ms % 1000) / 10:D2}";
